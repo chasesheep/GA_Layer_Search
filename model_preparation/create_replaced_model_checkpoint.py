@@ -45,6 +45,34 @@ def load_llamba_model(device='cuda'):
     print("📥 Loading Llamba model (unaligned)...")
     
     try:
+        # 添加models模块路径 - 尝试多种可能的位置
+        import sys
+        from pathlib import Path
+        
+        # 可能的Gather-and-Aggregate目录位置
+        possible_paths = [
+            Path(__file__).parent.parent.parent / 'GandA' / 'Gather-and-Aggregate',  # 开发环境
+            Path(__file__).parent.parent.parent / 'Gather-and-Aggregate',  # 其他情况
+            Path(__file__).parent.parent,  # 如果models就在上级目录
+            Path.cwd(),  # 当前工作目录
+        ]
+        
+        gather_dir = None
+        for path in possible_paths:
+            if (path / 'models').exists():
+                gather_dir = path
+                print(f"    ℹ️  Found models directory at: {gather_dir}")
+                sys.path.insert(0, str(gather_dir))
+                break
+        
+        if gather_dir is None:
+            print(f"    ⚠️  Warning: Could not find models directory")
+            print(f"    💡 Tip: Make sure 'models' directory (containing llamba.py) is accessible")
+            print(f"    💡 You can:")
+            print(f"       1. Run from the original GandA/Gather-and-Aggregate directory")
+            print(f"       2. Copy the 'models' directory to this project")
+            print(f"       3. Set PYTHONPATH to include the directory containing 'models'")
+        
         from modelscope_utils import get_model_modelscope
         model, tokenizer, num_heads, head_dim = get_model_modelscope('unaligned_llamba', is_minimal=False)
         

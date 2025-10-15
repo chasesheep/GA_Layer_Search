@@ -30,6 +30,8 @@ modelscope_cache/
 *.pth
 *.bin
 *.safetensors
+*.ckpt
+*.weights
 
 # 实验结果（可选择性提交）
 results/
