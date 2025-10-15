@@ -32,15 +32,8 @@ echo "========================================================================"
 ENV_NAME="ga_layer_search"
 
 if conda env list | grep -q "^${ENV_NAME} "; then
-    echo "⚠️  环境 ${ENV_NAME} 已存在"
-    read -p "是否删除并重新创建? (y/N): " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "删除旧环境..."
-        conda env remove -n ${ENV_NAME} -y
-    else
-        echo "使用现有环境"
-    fi
+    echo "⚠️  环境 ${ENV_NAME} 已存在，将使用现有环境"
+    echo "   （如需重建，请手动删除：conda env remove -n ${ENV_NAME} -y）"
 fi
 
 if ! conda env list | grep -q "^${ENV_NAME} "; then
