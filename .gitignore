@@ -39,7 +39,6 @@ results/
 checkpoints/
 *.json
 !single_layer_results.json
-!requirements.txt
 !package.json
 
 # 日志文件
