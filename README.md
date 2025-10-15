@@ -33,10 +33,7 @@ GA粗搜索（快速评估）→ 完整评估top候选 → 局部精炼 → 最�
 git clone <repo> GA_Layer_Search
 cd GA_Layer_Search
 
-# 复制models目录（仅需一次）
-cp -r /path/to/original/Gather-and-Aggregate/models ./models
-
-# 一键部署（自动完成环境、模型、层提取、测试）
+# 一键部署（自动完成环境、模型下载、层提取、测试）
 ./DEPLOY_TEST.sh
 ```
 
@@ -50,14 +47,11 @@ conda create -n ga_layer_search python=3.10
 conda activate ga_layer_search
 pip install -r requirements.txt
 
-# 2. 复制models
-cp -r /path/to/original/models ./models
-
-# 3. 提取Llama层
+# 2. 提取Llama层
 cd model_preparation
 python extract_layers.py --model_name llama --output_dir ../extracted_llama_layers
 
-# 4. 测试
+# 3. 测试
 python test_specific_combination.py --layers 17 --gpu_id 0 --limit 10
 ```
 
@@ -134,15 +128,15 @@ GA_Layer_Search/
 ├── genetic_algorithm/       # GA搜索代码
 ├── model_preparation/       # 模型工具（下载、层提取、checkpoint生成）
 ├── scripts/                 # 运行脚本
-├── models/                  # Llamba模型代码（需复制）
+├── models/                  # ✅ Llamba模型代码（已在Git中，~300KB）
 ├── config.sh               # 配置
 ├── DEPLOY_TEST.sh          # 一键部署
 └── requirements.txt        # 依赖
 
-运行时生成：
-├── extracted_llama_layers/ # ~40GB
-├── modelscope_cache/       # ~30GB
-└── model_checkpoints/      # ~16GB/个
+运行时自动生成：
+├── modelscope_cache/       # 模型权重缓存（~30GB）
+├── extracted_llama_layers/ # Llama层文件（~40GB）
+└── model_checkpoints/      # 生成的checkpoint（~16GB/个）
 ```
 
 ---

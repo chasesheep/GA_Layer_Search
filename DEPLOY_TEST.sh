@@ -68,29 +68,17 @@ pip install -r requirements.txt
 echo "✅ 依赖安装完成"
 echo ""
 
-# 步骤4: 准备models目录
+# 步骤4: 检查models目录
 echo "========================================================================"
-echo "步骤4: 准备models目录"
+echo "步骤4: 检查models目录"
 echo "========================================================================"
 if [ ! -d "models" ]; then
-    ORIGINAL_MODELS="../GandA/Gather-and-Aggregate/models"
-    if [ -d "${ORIGINAL_MODELS}" ]; then
-        echo "从原始项目复制models目录到项目根目录..."
-        cp -r "${ORIGINAL_MODELS}" ./models
-        echo "✅ models目录已复制到 ${PROJECT_ROOT}/models"
-    else
-        echo "❌ 错误: 未找到原始models目录: ${ORIGINAL_MODELS}"
-        echo ""
-        echo "   请手动复制models目录："
-        echo "   cp -r /path/to/original/models ${PROJECT_ROOT}/models"
-        echo ""
-        echo "   models目录应包含："
-        echo "   - llamba.py"
-        echo "   - 其他Llamba模型相关文件"
-        exit 1
-    fi
+    echo "❌ 错误: models目录不存在"
+    echo "   这不应该发生（models目录应该在Git中）"
+    exit 1
 else
     echo "✅ models目录已存在: ${PROJECT_ROOT}/models"
+    ls -lh models/ | head -5
 fi
 echo ""
 
