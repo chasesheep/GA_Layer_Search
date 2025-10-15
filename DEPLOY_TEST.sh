@@ -52,19 +52,26 @@ else
 fi
 echo ""
 
-# 步骤3: 激活环境并安装依赖
+# 步骤3: 安装Python依赖
 echo "========================================================================"
-echo "步骤3: 安装Python依赖"
+echo "步骤3: 安装Python依赖到新环境"
 echo "========================================================================"
-source "$(conda info --base)/etc/profile.d/conda.sh"
-conda activate ${ENV_NAME}
 
-echo "当前Python: $(which python)"
-echo "Python版本: $(python --version)"
+# 使用conda run确保包安装到正确环境
+CONDA_BASE=$(conda info --base)
+ENV_PATH="/data/huzhuangfei/conda_envs/${ENV_NAME}"
+
+echo "目标环境: ${ENV_NAME}"
+echo "环境路径: ${ENV_PATH}"
+echo "Python: ${ENV_PATH}/bin/python"
 echo ""
 
-echo "安装依赖包..."
-pip install -r requirements.txt
+echo "安装依赖包到 ${ENV_NAME}..."
+conda run -n ${ENV_NAME} pip install -r requirements.txt
+
+echo ""
+echo "验证安装..."
+conda run -n ${ENV_NAME} pip list | grep -E "torch|transformers|lm-eval" | head -5
 echo "✅ 依赖安装完成"
 echo ""
 
@@ -98,7 +105,7 @@ echo "========================================================================"
 cd model_preparation
 
 echo "检查模型是否已下载..."
-python << 'PYEOF'
+conda run -n ${ENV_NAME} python << 'PYEOF'
 import os
 os.environ['MODELSCOPE_CACHE'] = os.path.join(os.path.dirname(os.getcwd()), 'modelscope_cache')
 
@@ -137,7 +144,7 @@ if [ -d "../extracted_llama_layers" ] && [ "$(ls -A ../extracted_llama_layers 2>
     echo "✅ 层文件已存在（$(ls ../extracted_llama_layers/*.pt 2>/dev/null | wc -l)个文件）"
 else
     echo "提取Llama层文件（需要~5-10分钟）..."
-    python extract_layers.py \
+    conda run -n ${ENV_NAME} python extract_layers.py \
         --model_name llama \
         --output_dir ../extracted_llama_layers
     
@@ -156,7 +163,7 @@ echo "========================================================================"
 cd "${PROJECT_ROOT}/model_preparation"
 
 echo "测试单层替换（layer 17）..."
-python test_specific_combination.py \
+conda run -n ${ENV_NAME} --no-capture-output python test_specific_combination.py \
     --layers 17 \
     --gpu_id 7 \
     --batch_size 8 \
@@ -176,7 +183,7 @@ echo "========================================================================"
 cd "${PROJECT_ROOT}/genetic_algorithm"
 
 echo "运行Mock函数测试..."
-timeout 300 python run_complete_search.py || {
+timeout 300 conda run -n ${ENV_NAME} --no-capture-output python run_complete_search.py || {
     echo "⚠️  超时或失败，但继续..."
 }
 echo "✅ GA代码可运行"
@@ -189,7 +196,7 @@ echo "========================================================================"
 cd "${PROJECT_ROOT}/model_preparation"
 
 echo "生成测试checkpoint（layer 17）..."
-python create_replaced_model_checkpoint.py \
+conda run -n ${ENV_NAME} --no-capture-output python create_replaced_model_checkpoint.py \
     --layers 17 \
     --output_dir ../model_checkpoints/test_layer17 \
     --description "部署测试checkpoint" \
@@ -210,7 +217,7 @@ echo "========================================================================"
 cd "${PROJECT_ROOT}/model_preparation"
 
 echo "测试checkpoint加载..."
-python test_checkpoint.py \
+conda run -n ${ENV_NAME} --no-capture-output python test_checkpoint.py \
     --checkpoint ../model_checkpoints/test_layer17 \
     --gpu 7
 
