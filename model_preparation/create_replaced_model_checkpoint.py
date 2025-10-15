@@ -167,17 +167,21 @@ def save_replaced_model_checkpoint(model, tokenizer, replaced_layers, output_dir
     
     print(f"\n💾 Saving checkpoint to: {output_path}")
     
-    # 保存模型
-    model_path = output_path / "model.pt"
-    print(f"  📝 Saving model to: {model_path}")
-    torch.save(model, model_path)
-    print(f"    ✅ Model saved ({model_path.stat().st_size / 1e9:.2f} GB)")
-    
-    # 保存state_dict（更小，更灵活）
+    # 保存state_dict（主要方式，避免pickle lambda问题）
     state_dict_path = output_path / "model_state_dict.pt"
     print(f"  📝 Saving state_dict to: {state_dict_path}")
     torch.save(model.state_dict(), state_dict_path)
     print(f"    ✅ State dict saved ({state_dict_path.stat().st_size / 1e9:.2f} GB)")
+    
+    # 尝试保存完整模型（可能失败due to lambda）
+    model_path = output_path / "model.pt"
+    print(f"  📝 Saving complete model to: {model_path}")
+    try:
+        torch.save(model, model_path)
+        print(f"    ✅ Model saved ({model_path.stat().st_size / 1e9:.2f} GB)")
+    except Exception as e:
+        print(f"    ⚠️  Complete model save failed (lambda pickle issue): {e}")
+        print(f"    💡 Use model_state_dict.pt instead (it's complete and works)")
     
     # 保存tokenizer
     tokenizer_path = output_path / "tokenizer"
