@@ -75,8 +75,8 @@ conda create -n ga_layer_search python=3.10
 conda activate ga_layer_search
 pip install -r requirements.txt
 
-# 2. 准备models目录（复制或让脚本自动处理）
-cp -r /path/to/Gather-and-Aggregate/models ./
+# 2. 复制models目录到项目根目录
+cp -r /path/to/original/models ./models
 
 # 3. 提取Llama层文件
 cd model_preparation
@@ -292,8 +292,10 @@ A: 目前针对Llamba/Llama，但框架可以迁移到其他模型。
 
 ### 问题：找不到models目录
 ```bash
-# 解决：从原项目复制或让DEPLOY_TEST.sh自动处理
-cp -r /path/to/Gather-and-Aggregate/models ./
+# 解决：从原项目复制models目录到项目根目录
+cp -r /path/to/original/Gather-and-Aggregate/models ./models
+
+# 或让DEPLOY_TEST.sh自动处理（会从../GandA/Gather-and-Aggregate/复制）
 ```
 
 ### 问题：CUDA OOM

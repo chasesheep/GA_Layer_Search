@@ -31,6 +31,8 @@ def get_model_modelscope(model_name, is_minimal=False):
     """
     Modified get_model function that uses ModelScope for Llama models
     This function loads models via ModelScope instead of Hugging Face
+    
+    Note: Requires 'models' directory in project root containing llamba.py
     """
     torch.cuda.empty_cache()
     
@@ -84,6 +86,12 @@ def get_model_modelscope(model_name, is_minimal=False):
 
     elif model_name == 'llamba':
         # Llamba model - use Hugging Face for model, ModelScope for tokenizer
+        import sys
+        from pathlib import Path
+        # Add project models directory to path
+        models_dir = Path(__file__).parent.parent / 'models'
+        if models_dir.exists():
+            sys.path.insert(0, str(models_dir.parent))
         from models.llamba import LlambaLMHeadModel
         from modelscope import snapshot_download
         import os
@@ -135,6 +143,12 @@ def get_model_modelscope(model_name, is_minimal=False):
 
     elif model_name == "unaligned_llamba":
         # Unaligned Llamba model - use Hugging Face for model, ModelScope for tokenizer
+        import sys
+        from pathlib import Path
+        # Add project models directory to path
+        models_dir = Path(__file__).parent.parent / 'models'
+        if models_dir.exists():
+            sys.path.insert(0, str(models_dir.parent))
         from models.llamba import LlambaLMHeadModel
         from modelscope import snapshot_download
         import os
