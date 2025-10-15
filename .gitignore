@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 模型文件（大文件）
+extracted_llama_layers/
+extracted_llamba_layers/
+models/
+modelscope_cache/
+*.pt
+*.pth
+*.bin
+*.safetensors
+
+# 实验结果（可选择性提交）
+results/
+checkpoints/
+*.json
+!single_layer_results.json
+!requirements.txt
+!package.json
+
+# 日志文件
+*.log
+*.txt
+!README.txt
+
+# 缓存
+test_cache/
+.cache/
+*.pkl
+*.pickle
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# Tmux
+.tmux/
+
