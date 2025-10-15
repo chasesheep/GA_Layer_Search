@@ -72,10 +72,20 @@ python create_replaced_model_checkpoint.py \
 
 ```python
 import torch
+import sys
+sys.path.append('/path/to/GA_Layer_Search')
+from model_preparation.modelscope_utils import get_model_modelscope
 from transformers import AutoTokenizer
 
-# 加载
-model = torch.load('model_checkpoints/best_4layer/model.pt').cuda().eval()
+# 加载模型架构
+model, _, _, _ = get_model_modelscope('unaligned_llamba')
+
+# 加载checkpoint权重
+state_dict = torch.load('model_checkpoints/best_4layer/model_state_dict.pt')
+model.load_state_dict(state_dict)
+model = model.cuda().eval()
+
+# 加载tokenizer
 tokenizer = AutoTokenizer.from_pretrained('model_checkpoints/best_4layer/tokenizer')
 
 # 推理
@@ -83,6 +93,8 @@ inputs = tokenizer("Hello world", return_tensors="pt").cuda()
 outputs = model.generate(**inputs, max_new_tokens=50)
 print(tokenizer.decode(outputs[0]))
 ```
+
+**注**：使用`model_state_dict.pt`（权重文件），不是`model.pt`。
 
 ### 测试Checkpoint
 
