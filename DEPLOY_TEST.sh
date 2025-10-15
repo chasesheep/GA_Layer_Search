@@ -66,11 +66,14 @@ echo "Python: ${ENV_PYTHON}"
 echo ""
 
 echo "安装依赖包..."
+echo "  步骤1: 先安装numpy和scipy（避免兼容性问题）"
+${ENV_PIP} install -q numpy==1.26.4 scipy==1.14.1
+echo "  步骤2: 安装其他依赖"
 ${ENV_PIP} install -q -r requirements.txt
 
 echo ""
 echo "验证安装..."
-${ENV_PIP} list | grep -E "torch|transformers|lm-eval" | head -5
+${ENV_PIP} list | grep -E "torch|transformers|lm-eval|modelscope" | head -5
 echo "✅ 依赖安装完成"
 echo ""
 
