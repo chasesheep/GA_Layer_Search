@@ -68,8 +68,8 @@ GA_Layer_Search/
 
 ```bash
 # 创建conda环境
-conda create -n ganda_new python=3.10
-conda activate ganda_new
+conda create -n ga_layer_search python=3.10
+conda activate ga_layer_search
 
 # 安装依赖
 pip install -r requirements.txt
@@ -88,7 +88,16 @@ pip install -r requirements.txt
 
 #### 1.1 下载模型
 
-使用 `modelscope_utils.py` 中的工具从ModelScope下载模型：
+**推荐：使用自动化脚本**
+
+```bash
+# 一键完成所有准备工作（推荐）
+./DEPLOY_TEST.sh
+```
+
+这将自动完成环境创建、依赖安装、模型下载、层提取和测试。
+
+**或手动下载**：
 
 ```bash
 cd model_preparation/
@@ -100,7 +109,7 @@ python -c "from modelscope_utils import get_model_modelscope; get_model_modelsco
 python -c "from modelscope_utils import get_model_modelscope; get_model_modelscope('llama')"
 ```
 
-模型将自动下载到缓存目录（通常是 `~/.cache/modelscope/`）。
+模型将下载到项目内的 `modelscope_cache/` 目录。
 
 #### 1.2 提取Llama层文件
 

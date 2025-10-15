@@ -2,7 +2,7 @@
 
 ## 📋 开始前检查清单
 
-- [ ] 激活conda环境：`export PATH="/data/huzhuangfei/conda_envs/ganda_new/bin:$PATH"`
+- [ ] 激活conda环境：`conda activate ga_layer_search`
 - [ ] 检查GPU空闲：`nvidia-smi`
 - [ ] 进入目录：`cd /home/huzhuangfei/Code/GandA/genetic_layer_search`
 - [ ] 创建screen会话：`screen -S ga_search`

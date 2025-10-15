@@ -32,8 +32,9 @@ echo "   建议使用 screen 或 tmux 运行"
 echo ""
 read -p "确认开始？按Enter继续，或Ctrl+C取消..."
 
-# 激活环境
-export PATH="/data/huzhuangfei/conda_envs/ganda_new/bin:$PATH"
+# 加载配置
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "${SCRIPT_DIR}/../config.sh"
 
 # 进入目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
