@@ -23,6 +23,7 @@ ENV/
 # 模型文件（大文件）
 extracted_llama_layers/
 extracted_llamba_layers/
+model_checkpoints/
 models/
 modelscope_cache/
 *.pt
