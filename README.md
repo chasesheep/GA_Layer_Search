@@ -162,9 +162,7 @@ GA_Layer_Search/
 
 ## 📚 详细文档
 
-- **SETUP.md** - 安装配置指南
 - **MODEL_CHECKPOINTS_GUIDE.md** - Checkpoint完整指南
-- **ARCHITECTURE.md** - 技术架构
 
 ---
 
