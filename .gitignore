@@ -44,6 +44,7 @@ checkpoints/
 *.txt
 !README.txt
 !PROJECT_INFO.txt
+!CHECKPOINT_QUICKSTART.txt
 
 # 缓存
 test_cache/
