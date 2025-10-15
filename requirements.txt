@@ -8,4 +8,4 @@ lm_eval==0.4.7
 flash-attn==2.7.0.post2
 wonderwords==2.2.0
 modelscope>=1.30.0
-git+https://github.com/cartesia-ai/edge.git#subdirectory=cartesia-pytorch
+# cartesia-pytorch 已包含在项目源码中（./cartesia_pytorch/），无需安装

@@ -32,7 +32,7 @@ modelscope_cache/
 *.ckpt
 *.weights
 
-# models/目录包含在Git中（只是Python代码，很小~300KB）
+# models/ 和 cartesia_pytorch/ 包含在Git中（只是Python代码，很小）
 
 # 实验结果（可选择性提交）
 results/
