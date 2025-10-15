@@ -74,6 +74,11 @@ ${ENV_PIP} install -q -r requirements.txt
 echo ""
 echo "验证安装..."
 ${ENV_PIP} list | grep -E "torch|transformers|lm-eval|modelscope" | head -5
+
+echo ""
+echo "测试关键模块导入..."
+cd "${PROJECT_ROOT}"
+${ENV_PYTHON} -c "import sys; sys.path.insert(0, '.'); from transformers import AutoModelForCausalLM; from models.llamba import LlambaLMHeadModel; print('   ✅ 所有模块可导入')"
 echo "✅ 依赖安装完成"
 echo ""
 
