@@ -44,10 +44,10 @@ def get_model_modelscope(model_name, is_minimal=False):
         print(f"Loading Llama model via ModelScope: {model_id}")
         
         # Download model (will use cache if already downloaded)
-        # Use parent directory cache to avoid re-downloading
+        # Use project root modelscope_cache directory
         import os
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        cache_dir = os.path.join(script_dir, "modelscope_cache")
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cache_dir = os.environ.get('MODELSCOPE_CACHE', os.path.join(project_root, "modelscope_cache"))
         model_dir = snapshot_download(model_id, cache_dir=cache_dir)
         
         model = AutoModelForCausalLM.from_pretrained(
@@ -72,8 +72,8 @@ def get_model_modelscope(model_name, is_minimal=False):
         import os
         
         model_id = "LLM-Research/Meta-Llama-3.1-8B-Instruct"
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        cache_dir = os.path.join(script_dir, "modelscope_cache")
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cache_dir = os.environ.get('MODELSCOPE_CACHE', os.path.join(project_root, "modelscope_cache"))
         model_dir = snapshot_download(model_id, cache_dir=cache_dir)
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
         return tokenizer
@@ -100,8 +100,8 @@ def get_model_modelscope(model_name, is_minimal=False):
         
         # Use ModelScope for tokenizer (since we need Llama tokenizer)
         model_id = "LLM-Research/Meta-Llama-3.1-8B-Instruct"
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        cache_dir = os.path.join(script_dir, "modelscope_cache")
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cache_dir = os.environ.get('MODELSCOPE_CACHE', os.path.join(project_root, "modelscope_cache"))
         model_dir = snapshot_download(model_id, cache_dir=cache_dir)
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
         
@@ -158,8 +158,8 @@ def get_model_modelscope(model_name, is_minimal=False):
         
         # Use ModelScope for tokenizer (since we need Llama tokenizer and HF requires permissions)
         model_id = "LLM-Research/Meta-Llama-3.1-8B-Instruct"
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        cache_dir = os.path.join(script_dir, "modelscope_cache")
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        cache_dir = os.environ.get('MODELSCOPE_CACHE', os.path.join(project_root, "modelscope_cache"))
         model_dir = snapshot_download(model_id, cache_dir=cache_dir)
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
         
