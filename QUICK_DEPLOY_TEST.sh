@@ -31,6 +31,9 @@ ENV_PIP="${ENV_PATH}/bin/pip"
 
 echo "2️⃣  安装依赖..."
 echo "   环境: ${ENV_PATH}"
+echo "   先装numpy和scipy（避免兼容性问题）..."
+${ENV_PIP} install -q numpy==1.26.4 scipy==1.14.1
+echo "   安装其他依赖..."
 ${ENV_PIP} install -q -r requirements.txt
 echo "   ✅ 依赖安装完成"
 echo ""
