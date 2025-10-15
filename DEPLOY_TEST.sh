@@ -202,12 +202,12 @@ echo "步骤10: 测试Checkpoint生成"
 echo "========================================================================"
 cd "${PROJECT_ROOT}/model_preparation"
 
-echo "生成测试checkpoint（layer 17）..."
+echo "生成测试checkpoint（最优4层组合: [11, 13, 17, 29]）..."
 ${ENV_PYTHON} create_replaced_model_checkpoint.py \
-    --layers 17 \
-    --output_dir ../model_checkpoints/test_layer17 \
-    --description "部署测试checkpoint" \
-    --score 0.5144 \
+    --layers 11 13 17 29 \
+    --output_dir ../model_checkpoints/best_4layer \
+    --description "GA搜索最优4层组合" \
+    --score 0.5877 \
     --gpu 7
 
 if [ $? -ne 0 ]; then
@@ -224,9 +224,10 @@ echo "========================================================================"
 cd "${PROJECT_ROOT}/model_preparation"
 
 echo "测试checkpoint加载..."
-${ENV_PYTHON} test_checkpoint.py \
-    --checkpoint ../model_checkpoints/test_layer17 \
-    --gpu 7
+${ENV_PYTHON} load_checkpoint.py \
+    ../model_checkpoints/best_4layer \
+    --prompt "Hello, how are you?" \
+    --max_tokens 20
 
 if [ $? -ne 0 ]; then
     echo "❌ Checkpoint测试失败"
@@ -240,11 +241,13 @@ echo "========================================================================"
 echo "✅ 所有测试通过！项目已准备就绪"
 echo "========================================================================"
 echo ""
-echo "📂 项目结构:"
-echo "   - extracted_llama_layers/  ($(ls ../extracted_llama_layers/*.pt 2>/dev/null | wc -l)个层文件)"
-echo "   - modelscope_cache/         (模型缓存)"
-echo "   - models/                   (Llamba模型代码)"
-echo "   - model_checkpoints/        (生成的checkpoint)"
+echo "📂 生成的文件:"
+echo "   - extracted_llama_layers/  ($(ls ../extracted_llama_layers/*.pt 2>/dev/null | wc -l)个层文件, ~40GB)"
+echo "   - modelscope_cache/         (模型缓存, ~30GB)"
+echo "   - model_checkpoints/best_4layer/  (测试checkpoint, ~16GB)"
+echo ""
+echo "🎯 生成的checkpoint可直接使用:"
+echo "   python model_preparation/load_checkpoint.py model_checkpoints/best_4layer"
 echo ""
 echo "🎯 下一步:"
 echo "   1. 运行快速测试:"
