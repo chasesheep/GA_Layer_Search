@@ -121,4 +121,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
     
     quick_test(args.checkpoint_dir, args.prompt, args.max_tokens)
-

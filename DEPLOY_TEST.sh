@@ -4,6 +4,8 @@
 set -e  # 遇到错误立即退出
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODEL_DOWNLOAD_CUDA_DEVICE="${MODEL_DOWNLOAD_CUDA_DEVICE:-1}"
+CHECKPOINT_CUDA_DEVICE="${CHECKPOINT_CUDA_DEVICE:-${MODEL_DOWNLOAD_CUDA_DEVICE:-0}}"
 cd "${PROJECT_ROOT}"
 
 echo "========================================================================"
@@ -68,8 +70,21 @@ echo ""
 echo "安装依赖包..."
 echo "  步骤1: 先安装numpy和scipy（避免兼容性问题）"
 ${ENV_PIP} install -q numpy==1.26.4 scipy==1.14.1
-echo "  步骤2: 安装其他依赖"
-${ENV_PIP} install -q -r requirements.txt
+echo "  步骤2: 安装PyTorch"
+${ENV_PIP} install -q torch==2.4.0
+echo "  步骤3: 安装Flash Attention"
+${ENV_PIP} install -q flash-attn==2.7.0.post2
+echo "  步骤4: 安装mamba-ssm（本地源码）"
+(
+    cd "${PROJECT_ROOT}/mamba-2.2.4"
+    ${ENV_PIP} install -q --no-build-isolation .
+)
+echo "  步骤5: 安装剩余依赖"
+REQ_FILE="${PROJECT_ROOT}/requirements.txt"
+TEMP_REQ="$(mktemp)"
+grep -Ev '^(numpy==|scipy==|torch==|flash-attn==|mamba-ssm)' "${REQ_FILE}" > "${TEMP_REQ}"
+${ENV_PIP} install -q -r "${TEMP_REQ}"
+rm -f "${TEMP_REQ}"
 
 echo ""
 echo "验证安装..."
@@ -111,9 +126,17 @@ echo "步骤6: 下载模型"
 echo "========================================================================"
 cd model_preparation
 
+
+echo "使用CUDA设备: ${MODEL_DOWNLOAD_CUDA_DEVICE} 进行模型下载/加载"
+export MODEL_DOWNLOAD_CUDA_DEVICE
+
 echo "检查模型是否已下载..."
 ${ENV_PYTHON} << 'PYEOF'
 import os
+selected_cuda = os.environ.get('MODEL_DOWNLOAD_CUDA_DEVICE') or os.environ.get('CUDA_VISIBLE_DEVICES') or '0'
+os.environ['CUDA_VISIBLE_DEVICES'] = selected_cuda
+print(f"CUDA设备已设置为: cuda:{selected_cuda}")
+
 os.environ['MODELSCOPE_CACHE'] = os.path.join(os.path.dirname(os.getcwd()), 'modelscope_cache')
 
 try:
@@ -224,10 +247,14 @@ echo "========================================================================"
 cd "${PROJECT_ROOT}/model_preparation"
 
 echo "测试checkpoint加载..."
-${ENV_PYTHON} load_checkpoint.py \
+export MODEL_DOWNLOAD_CUDA_DEVICE
+
+echo "使用CUDA设备: ${CHECKPOINT_CUDA_DEVICE} 进行Checkpoint测试"
+CUDA_VISIBLE_DEVICES="${CHECKPOINT_CUDA_DEVICE}" "${ENV_PYTHON}" load_hybrid_checkpoint.py \
     ../model_checkpoints/best_4layer \
     --prompt "Hello, how are you?" \
-    --max_tokens 20
+    --max_tokens 20 \
+    --llama_layers_dir ../extracted_llama_layers
 
 if [ $? -ne 0 ]; then
     echo "❌ Checkpoint测试失败"
@@ -264,4 +291,3 @@ echo "   - README.md - 项目概述"
 echo "   - SETUP.md - 详细安装指南"
 echo "   - MODEL_CHECKPOINTS_GUIDE.md - Checkpoint使用"
 echo ""
-

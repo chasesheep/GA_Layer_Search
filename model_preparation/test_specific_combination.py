@@ -231,6 +231,8 @@ def main():
                        help='Limit samples per task (default: None for full MMLU)')
     parser.add_argument('--gpu_id', type=int, default=0,
                        help='GPU ID to use (default: 0)')
+    parser.add_argument('--llama_layers_dir', type=str, default="../extracted_llama_layers",
+                       help='Directory containing extracted Llama layers (default: ../extracted_llama_layers)')
     
     args = parser.parse_args()
     
@@ -238,7 +240,7 @@ def main():
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu_id)
     
     # 提取层路径
-    llama_layers_dir = "/home/huzhuangfei/Code/GandA/Gather-and-Aggregate/extracted_llama_layers"
+    llama_layers_dir = args.llama_layers_dir
     
     print(f"\n{'='*80}")
     print(f"CONFIGURATION")
