@@ -31,12 +31,19 @@ class CustomMambaCausalLMOutput(ModelOutput):
 class LlambaLMHeadModel(nn.Module, GenerationMixin, PyTorchModelHubMixin):
     """MambaLM model with a language modeling head on top (linear layer)."""
 
-    def __init__(self, config, initializer_cfg=None, device=None, dtype=None, **kwargs) -> None:
+    def __init__(self, config=None, initializer_cfg=None, device=None, dtype=None, **kwargs) -> None:
         super().__init__()
 
-        # Load config
-        if not isinstance(config, LlambaConfig):
+        # # Load config
+        # if not isinstance(config, LlambaConfig):
+        #     config = LlambaConfig(**config)
+        # 兼容三种入口：LlambaConfig / dict / None+kwargs
+        if isinstance(config, LlambaConfig):
+            config = config
+        elif isinstance(config, dict):
             config = LlambaConfig(**config)
+        else:
+            config = LlambaConfig(**kwargs)  # 直接用kwargs里字段构造
         self.config = config
         self.tie_weights = lambda : None
 
@@ -150,7 +157,7 @@ class LlambaLMHeadModel(nn.Module, GenerationMixin, PyTorchModelHubMixin):
         with open(config_path, "w") as f:
             json.dump(self.config.to_dict(), f)
 
-
+import torch.utils.checkpoint as checkpoint
 class MixerModel(nn.Module):
     """Mixer model with a stack of Mixer layers."""
 
@@ -159,7 +166,7 @@ class MixerModel(nn.Module):
         super().__init__()
         self.config = config
         self.embedding = nn.Embedding(input_size, self.config.d_model, **factory_kwargs)
-
+        self.gradient_checkpointing = self.config.gradient_checkpointing if hasattr(self.config, "gradient_checkpointing") else False
         self.layers = nn.ModuleList(
             [
                 Block(
@@ -211,13 +218,31 @@ class MixerModel(nn.Module):
 
         # Run the layers
         for layer in self.layers:
-            layer_outputs = layer(
-                hidden_states,
-                inference_params=inference_params,
-                position_embeddings=position_embeddings,
-                output_attentions=output_attentions,
-
-            )
+            if self.gradient_checkpointing:
+                # 确保有梯度追踪的情况下才使用激活检查点
+                if not hidden_states.requires_grad:
+                    hidden_states = hidden_states.detach().requires_grad_(True)
+                # 仅传 Tensor 给 checkpoint； 非 Tensor 用闭包捕获
+                import functools
+                fn = functools.partial(
+                    layer,
+                    inference_params=inference_params,
+                    output_attentions=output_attentions,
+                    position_embeddings=position_embeddings,
+                )
+                layer_outputs = checkpoint.checkpoint(
+                    fn,
+                    hidden_states,
+                    use_reentrant=False,
+                    preserve_rng_state=False,
+                )
+            else:
+                layer_outputs = layer(
+                    hidden_states,
+                    inference_params=inference_params,
+                    position_embeddings=position_embeddings,
+                    output_attentions=output_attentions,
+                )
             # Record outputs
             hidden_states = layer_outputs["hidden_states"] if isinstance(layer_outputs, dict) else layer_outputs[0]
             if return_hidden_states:
