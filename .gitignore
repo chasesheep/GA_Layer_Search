@@ -65,3 +65,8 @@ Thumbs.db
 # Tmux
 .tmux/
 
+
+# Keep beam search reference artefacts under version control
+!beam_search/results/
+!beam_search/results/*.json
+!beam_search/results/*.png
