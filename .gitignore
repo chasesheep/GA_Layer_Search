@@ -70,3 +70,4 @@ Thumbs.db
 !beam_search/results/
 !beam_search/results/*.json
 !beam_search/results/*.png
+!beam_search/results/*.txt
